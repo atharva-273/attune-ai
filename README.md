@@ -45,11 +45,21 @@ Process-level contracts live in `src/contracts/flowContracts.ts`:
 
 Each runtime screen must include a `figmaNodeId` mapped through metadata and emitted as `data-figma-node-id` for traceability.
 
-## First Flow Seed
+## First Implemented Flow
 
-A demo onboarding flow is included at:
+The onboarding flow under Figma node `2480:17652` is implemented at:
 
-- `/flows/demo/welcome`
-- `/flows/demo/preferences`
-
-This seed establishes route structure, motion defaults, and traceability conventions. Replace with actual Figma flow values once provided.
+- `/flows/onboarding/splash`
+- `/flows/onboarding/1`
+- `/flows/onboarding/2`
+- `/flows/onboarding/3`
+- `/flows/onboarding/4-1`
+- `/flows/onboarding/4-2`
+- `/flows/onboarding/4-3`
+- `/flows/onboarding/5-1`
+- `/flows/onboarding/5-2`
+- `/flows/onboarding/6-1`
+- `/flows/onboarding/6-2`
+- `/flows/onboarding/8-2`
+- `/flows/onboarding/9`
+- `/flows/onboarding/10`

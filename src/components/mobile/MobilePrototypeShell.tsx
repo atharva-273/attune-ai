@@ -23,11 +23,6 @@ export function MobilePrototypeShell({
       data-figma-node-id={figmaNodeId}
       data-frame-name={frameName}
     >
-      <header className={styles.deviceStatusBar}>
-        <span>9:41</span>
-        <span>{frameName}</span>
-        <span>100%</span>
-      </header>
       <div className={styles.screenArea}>{children}</div>
     </section>
   );

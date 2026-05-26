@@ -1,4 +1,7 @@
 export type FlowNodeId = string;
+export type BackgroundMode = "image" | "neutral";
+export type SwipeTransitionMode = "background-first" | "full-screen";
+export type TapFeedbackPreset = "minimal" | "none";
 
 export interface AssetReference {
   key: string;
@@ -11,6 +14,12 @@ export interface InteractionTiming {
   durationMs: number;
   delayMs?: number;
   easing?: [number, number, number, number] | string;
+}
+
+export interface FlowInteractionProfile {
+  tapFeedbackPreset: TapFeedbackPreset;
+  checkboxTransition: "fade" | "scale-fade";
+  swipeTransitionMode: SwipeTransitionMode;
 }
 
 export type InteractionSpec =
@@ -47,6 +56,7 @@ export interface FlowOutput {
     route: string;
   }>;
   motionConfig: InteractionTiming[];
+  interactionProfile?: FlowInteractionProfile;
   fidelityChecklist: string[];
   angularHandoffNotes: string[];
 }
