@@ -1,0 +1,70 @@
+.screen {
+  height: 100%;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(255, 124, 84, 0.22), transparent 35%),
+    linear-gradient(180deg, #fcfaf3 0%, #f4efe3 100%);
+  padding: 28px 22px 26px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backButton {
+  border: 0;
+  background: rgba(16, 63, 55, 0.08);
+  color: #0f3f37;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.stepLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4d615b;
+}
+
+.heading {
+  margin: 0;
+  color: #1b2a27;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-family: var(--font-heading);
+}
+
+.optionGrid {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.option {
+  border: 1px solid rgba(17, 45, 39, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  padding: 15px 14px;
+  border-radius: 14px;
+  text-align: left;
+  font-size: 14px;
+  color: #203530;
+  cursor: pointer;
+}
+
+.finish {
+  border: 0;
+  background: linear-gradient(180deg, #172925 0%, #101d1a 100%);
+  color: #f6f4ec;
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+}

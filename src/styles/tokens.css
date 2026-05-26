@@ -1,0 +1,18 @@
+:root {
+  --frame-width: 390px;
+  --frame-height: 844px;
+
+  --font-heading: "Sora", "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+
+  --color-surface: #ffffff;
+  --color-text: #122421;
+  --color-muted: #445a54;
+  --color-accent: #0f3f37;
+  --color-accent-soft: #dceae5;
+
+  --radius-screen: 36px;
+  --radius-card: 16px;
+
+  --shadow-frame: 0 24px 64px rgba(19, 25, 22, 0.22);
+}
