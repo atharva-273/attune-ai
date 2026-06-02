@@ -17,6 +17,7 @@ import {
 import {
   isAccountFormValid,
   isInviteCodeValid,
+  isVerificationCodeValid,
   useOnboardingState
 } from "./onboardingState";
 import styles from "./OnboardingScreen.module.css";
@@ -26,6 +27,7 @@ type SheetKind = "learn" | "terms" | "privacy";
 const SWIPE_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 let previousScreenIndex = 0;
+let previousProgressStep = 0;
 
 interface PressableButtonProps {
   className: string;
@@ -66,9 +68,9 @@ function useRouteDirection(screenIndex: number) {
   return direction;
 }
 
-function StatusBar() {
+function StatusBar({ light = false }: { light?: boolean }) {
   return (
-    <header className={styles.statusBar}>
+    <header className={`${styles.statusBar} ${light ? styles.statusBarLight : ""}`}>
       <div className={styles.statusTimeWrap}>
         <span className={styles.statusTime}>9:41</span>
       </div>
@@ -100,17 +102,40 @@ function HomeIndicator({ light }: { light: boolean }) {
   );
 }
 
-function ProgressBar({ currentStep }: { currentStep: number }) {
+function ProgressBar({
+  currentStep,
+  totalSteps
+}: {
+  currentStep: number;
+  totalSteps: number;
+}) {
+  const previousStepRef = useRef(previousProgressStep);
+
+  useEffect(() => {
+    previousProgressStep = currentStep;
+  }, [currentStep]);
+
   return (
     <div className={styles.progress}>
-      {[1, 2, 3, 4].map((step) => (
-        <div
-          key={step}
-          className={`${styles.progressSegment} ${
-            step <= currentStep ? styles.progressSegmentActive : ""
-          }`}
-        />
-      ))}
+      {Array.from({ length: totalSteps }, (_, index) => index + 1).map((step) => {
+        const wasFilled = step <= previousStepRef.current;
+        const isFilled = step <= currentStep;
+        const shouldAnimateFill = !wasFilled && isFilled;
+
+        return (
+          <div key={step} className={styles.progressSegment}>
+            <motion.span
+              className={styles.progressSegmentFill}
+              initial={{ scaleX: wasFilled ? 1 : 0 }}
+              animate={{ scaleX: isFilled ? 1 : 0 }}
+              transition={{
+                duration: shouldAnimateFill ? 0.36 : 0.2,
+                ease: SWIPE_EASE
+              }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -168,45 +193,65 @@ function InfoSheet({
 
 function getBackgroundStyle(screenKey: OnboardingScreenKey): string {
   switch (screenKey) {
+    case "start":
+      return `linear-gradient(180deg, rgba(255, 255, 255, 0.07) 48.341%, rgba(0, 0, 0, 0.7) 100%), url(${onboardingAssets.onboardingStartHero})`;
     case "splash":
-      return `linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.6) 100%), url(${onboardingAssets.splashImage})`;
+      return `linear-gradient(180deg, rgba(255, 255, 255, 0.07) 79.348%, rgba(0, 0, 0, 0.7) 100%), url(${onboardingAssets.splashImage})`;
     case "five1":
-      return `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.6) 100%), url(${onboardingAssets.onboarding5HeroB}), url(${onboardingAssets.onboarding5HeroA})`;
+      return `linear-gradient(180deg, rgba(255, 255, 255, 0.15) 79.348%, rgba(0, 0, 0, 0.7) 100%), url(${onboardingAssets.onboarding5HeroA})`;
     case "five2":
-      return `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.6) 100%), url(${onboardingAssets.onboarding5HeroBAlt}), url(${onboardingAssets.onboarding5HeroAAlt})`;
+      return `linear-gradient(180deg, rgba(255, 255, 255, 0.15) 79.348%, rgba(0, 0, 0, 0.7) 100%), url(${onboardingAssets.onboarding5HeroAAlt})`;
     case "nine":
-      return `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.58) 100%), url(${onboardingAssets.onboarding9Hero})`;
+      return `linear-gradient(180deg, rgba(255, 255, 255, 0.08) 75.744%, rgba(0, 0, 0, 0.7) 100%), url(${onboardingAssets.onboarding9Hero})`;
+    case "twelve":
+      return `linear-gradient(180deg, rgba(255, 255, 255, 0.2) 79.348%, rgba(0, 0, 0, 0.7) 100%), url(${onboardingAssets.onboardingReadyHero})`;
     default:
-      return "linear-gradient(168deg, #f6f5f2 0%, #efefec 100%)";
+      return "none";
   }
 }
 
 function renderProgress(screen: OnboardingScreenMeta) {
   if (!screen.progressVisible || !screen.progressState) {
+    previousProgressStep = 0;
     return null;
   }
 
-  return <ProgressBar currentStep={screen.progressState.step} />;
+  return (
+    <ProgressBar
+      currentStep={screen.progressState.step}
+      totalSteps={screen.progressState.total}
+    />
+  );
 }
 
 export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
   const navigate = useNavigate();
   const direction = useRouteDirection(screen.screenIndex);
   const inviteInputRef = useRef<HTMLInputElement>(null);
+  const verificationInputRef = useRef<HTMLInputElement>(null);
   const [sheetKind, setSheetKind] = useState<SheetKind | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
+    selectedFlowMode,
+    setSelectedFlowMode,
     inviteCode,
     setInviteCode,
+    verificationCode,
+    setVerificationCode,
     accountForm,
     setAccountField,
     legalChecks,
     setLegalCheck,
-    resetLegalChecks
+    resetLegalChecks,
+    resetAllTestingState
   } = useOnboardingState();
 
   const inviteValid = useMemo(() => isInviteCodeValid(inviteCode), [inviteCode]);
+  const verificationValid = useMemo(
+    () => isVerificationCodeValid(verificationCode),
+    [verificationCode]
+  );
   const accountValid = useMemo(() => isAccountFormValid(accountForm), [accountForm]);
   const legalValid = useMemo(
     () => legalChecks.age && legalChecks.aiCoach && legalChecks.terms && legalChecks.privacy,
@@ -223,6 +268,11 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
       setAccountField("email", "test@gmail.com");
       setAccountField("password", "password123");
       setAccountField("confirmPassword", "password123");
+      return;
+    }
+
+    if (screen.screenKey === "seven2" && !verificationValid && verificationCode.trim() === "") {
+      setVerificationCode("VHT31");
     }
   }, [
     accountForm.email,
@@ -231,7 +281,10 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
     inviteValid,
     screen.screenKey,
     setAccountField,
-    setInviteCode
+    setInviteCode,
+    setVerificationCode,
+    verificationCode,
+    verificationValid
   ]);
 
   useEffect(() => {
@@ -252,28 +305,73 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
 
     if (screen.screenKey === "six2" && !accountValid) {
       navigate(ONBOARDING_ROUTES.six1, { replace: true });
+      return;
     }
-  }, [accountValid, inviteValid, navigate, screen.screenKey]);
+
+    if (screen.screenKey === "seven1" && verificationValid) {
+      navigate(ONBOARDING_ROUTES.seven2, { replace: true });
+      return;
+    }
+
+    if (screen.screenKey === "seven2" && !verificationValid) {
+      navigate(ONBOARDING_ROUTES.seven1, { replace: true });
+      return;
+    }
+
+    if (screen.screenKey === "eight1" && legalValid) {
+      navigate(ONBOARDING_ROUTES.eight2, { replace: true });
+      return;
+    }
+
+    if (screen.screenKey === "eight2" && !legalValid) {
+      navigate(ONBOARDING_ROUTES.eight1, { replace: true });
+    }
+  }, [accountValid, inviteValid, legalValid, navigate, screen.screenKey, verificationValid]);
 
   useEffect(() => {
-    if (screen.screenKey !== "eight2") {
+    if (screen.screenKey !== "eight1" && screen.screenKey !== "eight2") {
       setSheetKind(null);
       return;
     }
 
-    resetLegalChecks();
-  }, [resetLegalChecks, screen.screenKey]);
+    if (screen.screenKey === "eight1") {
+      resetLegalChecks();
+    }
+  }, [screen.screenKey]);
 
   const onInviteCodeChange = (event: ChangeEvent<HTMLInputElement>) => {
     const normalizedValue = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
     setInviteCode(normalizedValue.slice(0, 5));
   };
 
+  const onVerificationCodeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const normalizedValue = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    setVerificationCode(normalizedValue.slice(0, 5));
+  };
+
   const inviteCodeChars = inviteCode.slice(0, 5).split("");
+  const verificationCodeChars = verificationCode.slice(0, 5).split("");
+
+  const topSpacingClass =
+    screen.screenKey === "five1" ||
+    screen.screenKey === "five2" ||
+    screen.screenKey === "nine" ||
+    screen.screenKey === "twelve"
+      ? styles.containerTop24
+      : screen.screenKey === "six1" ||
+          screen.screenKey === "six2" ||
+          screen.screenKey === "seven1" ||
+          screen.screenKey === "seven2" ||
+          screen.screenKey === "eight1" ||
+          screen.screenKey === "eight2" ||
+          screen.screenKey === "ten" ||
+          screen.screenKey === "eleven"
+        ? styles.containerTop32
+        : "";
 
   const rootClassName = `${styles.container} ${
     screen.backgroundMode === "image" ? styles.containerOnImage : ""
-  }`;
+  } ${topSpacingClass}`.trim();
 
   const backgroundStyle = {
     backgroundImage: getBackgroundStyle(screen.screenKey)
@@ -281,10 +379,113 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
 
   const renderScreenBody = () => {
     switch (screen.screenKey) {
+      case "selector":
+        return (
+          <>
+            <div className={styles.selectorStack}>
+              <div className={styles.titleBlock}>
+                <h1 className={styles.title}>Choose your test flow</h1>
+                <p className={styles.subtitle}>
+                  Tap on a mode to begin your journey through the app
+                </p>
+              </div>
+              <div className={styles.selectorChips}>
+                <span className={styles.selectorChip}>Private Beta Testing</span>
+                <span className={`${styles.selectorChip} ${styles.selectorChipAlert}`}>
+                  User Not Authenticated
+                </span>
+              </div>
+              <div className={styles.selectorList}>
+                <button
+                  type="button"
+                  className={`${styles.selectorItem} ${
+                    selectedFlowMode === "onboarding" ? styles.selectorItemActive : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedFlowMode("onboarding");
+                    navigate(ONBOARDING_ROUTES.start);
+                  }}
+                >
+                  <div className={styles.selectorItemContent}>
+                    <p className={styles.selectorItemTitle}>Start Onboarding Flow</p>
+                    <p className={styles.selectorItemSubtitle}>Onboarding flow</p>
+                  </div>
+                  <span aria-hidden="true" className={styles.selectorArrow}>
+                    →
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.selectorItem} ${
+                    selectedFlowMode === "invite" ? styles.selectorItemActive : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedFlowMode("invite");
+                    navigate(ONBOARDING_ROUTES.five1);
+                  }}
+                >
+                  <div className={styles.selectorItemContent}>
+                    <p className={styles.selectorItemTitle}>New user with invite</p>
+                    <p className={styles.selectorItemSubtitle}>Onboarding with partner&apos;s invite</p>
+                  </div>
+                  <span aria-hidden="true" className={styles.selectorArrow}>
+                    →
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.selectorItem} ${
+                    selectedFlowMode === "skip" ? styles.selectorItemActive : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedFlowMode("skip");
+                    navigate(ONBOARDING_ROUTES.twelve);
+                  }}
+                >
+                  <div className={styles.selectorItemContent}>
+                    <p className={styles.selectorItemTitle}>Skip to App</p>
+                    <p className={styles.selectorItemSubtitle}>Continue with existing session (if any)</p>
+                  </div>
+                  <span aria-hidden="true" className={styles.selectorArrow}>
+                    →
+                  </span>
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={`${styles.textAction} ${styles.textActionDark}`}
+              onClick={() => {
+                resetAllTestingState();
+                navigate(ONBOARDING_ROUTES.selector, { replace: true });
+              }}
+            >
+              Reset all testing state
+            </button>
+          </>
+        );
+      case "start":
+        return (
+          <>
+            <div className={styles.startScreenBody} />
+            <div className={styles.actionColumn}>
+              <div className={styles.startBrandStack}>
+                <h1 className={styles.startBrand}>AttuneAI</h1>
+                <p className={styles.startTagline}>Emotional Infrastructure for relationships</p>
+              </div>
+              <PressableButton
+                className={styles.primaryLightButton}
+                onClick={() => navigate(ONBOARDING_ROUTES.splash)}
+              >
+                Get Started
+              </PressableButton>
+            </div>
+          </>
+        );
       case "splash":
         return (
           <>
-            <div className={`${styles.sectionTop} ${styles.sectionMainGap}`}>
+            <div className={styles.sectionTop}>
               {renderProgress(screen)}
               <div className={styles.titleBlock}>
                 <h1 className={styles.title}>{"Stay Steady.\nThink Clearly.\nShow up."}</h1>
@@ -521,7 +722,7 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
       case "five2":
         return (
           <>
-            <div className={styles.sectionTop}>
+            <div className={`${styles.sectionTop} ${styles.sectionInviteGap}`}>
               {renderProgress(screen)}
               <div className={styles.titleBlock}>
                 <h1 className={styles.title}>Joining through a partner invite?</h1>
@@ -562,16 +763,19 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
                   !inviteValid ? styles.primaryButtonDisabled : ""
                 }`}
                 disabled={!inviteValid}
-                onClick={() => navigate(ONBOARDING_ROUTES.nine)}
+                onClick={() => navigate(ONBOARDING_ROUTES.six1)}
               >
                 Continue with invite
               </PressableButton>
               <button
                 type="button"
                 className={styles.textAction}
-                onClick={() => navigate(ONBOARDING_ROUTES.six1)}
+                onClick={() => {
+                  resetAllTestingState();
+                  navigate(ONBOARDING_ROUTES.selector);
+                }}
               >
-                I don’t have a code
+                Reset all testing state
               </button>
             </div>
           </>
@@ -650,7 +854,7 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
                     !accountValid ? styles.primaryButtonDisabled : ""
                   }`}
                   disabled={!accountValid}
-                  onClick={() => navigate(ONBOARDING_ROUTES.eight2)}
+                  onClick={() => navigate(ONBOARDING_ROUTES.seven1)}
                 >
                   Continue
                 </PressableButton>
@@ -672,6 +876,67 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
           </>
         );
       }
+      case "seven1":
+      case "seven2":
+        return (
+          <>
+            <div className={styles.sectionTop}>
+              <div className={styles.titleBlock}>
+                <h1 className={styles.title}>{"Verify your email to\ncreate your account"}</h1>
+                <p className={styles.subtitle}>
+                  We have sent the verification mail on <strong>test@gmail.com</strong>
+                </p>
+              </div>
+              <div className={styles.inviteStack}>
+                <input
+                  ref={verificationInputRef}
+                  value={verificationCode}
+                  onChange={onVerificationCodeChange}
+                  className={styles.inviteInput}
+                  autoComplete="off"
+                  inputMode="text"
+                  aria-label="Verification code"
+                />
+                <button
+                  type="button"
+                  className={styles.inviteCodeRow}
+                  onClick={() => verificationInputRef.current?.focus()}
+                >
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div key={`verification-${index}`} className={styles.inviteCodeCell}>
+                      <span
+                        className={`${styles.inviteCodeChar} ${
+                          screen.screenKey === "seven1" ? styles.inviteCodeCharHidden : ""
+                        }`}
+                      >
+                        {verificationCodeChars[index] ?? ""}
+                      </span>
+                    </div>
+                  ))}
+                </button>
+                <p className={styles.inviteHint}>Find your invite code on the invite page or message.</p>
+                <p className={styles.timerText}>
+                  <span>Resend code after</span> <strong>00: 30 sec</strong>
+                </p>
+              </div>
+            </div>
+            <div className={styles.actionRow}>
+              <PressableButton className={styles.backButton} onClick={() => navigate(ONBOARDING_ROUTES.six2)}>
+                ←
+              </PressableButton>
+              <PressableButton
+                className={`${styles.primaryButton} ${
+                  !verificationValid ? styles.primaryButtonDisabled : ""
+                }`}
+                disabled={!verificationValid}
+                onClick={() => navigate(ONBOARDING_ROUTES.eight1)}
+              >
+                Proceed
+              </PressableButton>
+            </div>
+          </>
+        );
+      case "eight1":
       case "eight2":
         return (
           <>
@@ -768,7 +1033,7 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
             <div className={styles.actionRow}>
               <PressableButton
                 className={styles.backButton}
-                onClick={() => navigate(ONBOARDING_ROUTES.six2)}
+                onClick={() => navigate(ONBOARDING_ROUTES.seven2)}
               >
                 ←
               </PressableButton>
@@ -777,9 +1042,9 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
                   !legalValid ? styles.primaryButtonDisabled : ""
                 }`}
                 disabled={!legalValid}
-                onClick={() => navigate(ONBOARDING_ROUTES.ten)}
+                onClick={() => navigate(ONBOARDING_ROUTES.nine)}
               >
-                Proceed
+                Understood
               </PressableButton>
             </div>
           </>
@@ -842,13 +1107,222 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
               </div>
             </div>
             <div className={styles.actionColumn}>
-              <PressableButton className={styles.primaryButton}>Retake the quiz</PressableButton>
-              <button type="button" className={`${styles.textAction} ${styles.textActionDark}`}>
+              <PressableButton
+                className={styles.primaryButton}
+                onClick={() => navigate(ONBOARDING_ROUTES.eleven)}
+              >
+                Retake the quiz
+              </PressableButton>
+              <button
+                type="button"
+                className={`${styles.textAction} ${styles.textActionDark}`}
+                onClick={() => navigate(ONBOARDING_ROUTES.eleven)}
+              >
                 Skip for now
               </button>
             </div>
           </>
         );
+      case "eleven":
+        return (
+          <>
+            <div className={styles.sectionTop}>
+              <div className={styles.titleBlock}>
+                <h1 className={styles.title}>{"The the Love\nLanguage Quiz"}</h1>
+                <p className={styles.subtitle}>
+                  A short quiz to help you notice how you most naturally give and receive care. It
+                  can deepen connection and reduce small misunderstandings
+                </p>
+              </div>
+              <div className={styles.infoStack}>
+                <p className={styles.infoItemBody}>
+                  Each assessment you complete generates a full pdf you can keep - a private
+                  resource for self-reflection and ongoing insight
+                </p>
+                <hr className={styles.infoLine} />
+                <p className={styles.infoItemBody}>
+                  Your partner will also be invited to take these. If you both complete one,
+                  you&apos;ll receive a joint partner summary PDF - to help you understand each
+                  other better and support your relationship. It&apos;s all completely optional.
+                </p>
+              </div>
+            </div>
+            <div className={styles.actionColumn}>
+              <PressableButton
+                className={styles.primaryButton}
+                onClick={() => navigate(ONBOARDING_ROUTES.twelve)}
+              >
+                Take the quiz
+              </PressableButton>
+              <button
+                type="button"
+                className={`${styles.textAction} ${styles.textActionDark}`}
+                onClick={() => navigate(ONBOARDING_ROUTES.twelve)}
+              >
+                Skip for now
+              </button>
+            </div>
+          </>
+        );
+      case "twelve":
+        return (
+          <>
+            <div className={styles.sectionTop}>
+              <div className={styles.titleBlock}>
+                <h1 className={styles.title}>Ready to get started?</h1>
+                <p className={styles.subtitle}>
+                  We&apos;re almost there! You are all set for starting your journey with Attune AI
+                </p>
+              </div>
+            </div>
+            <div className={styles.actionColumn}>
+              <PressableButton
+                className={styles.primaryLightButton}
+                onClick={() => navigate(ONBOARDING_ROUTES.thirteen1)}
+              >
+                Continue
+              </PressableButton>
+              <button type="button" className={styles.textAction}>
+                No commitment. Cancel anytime.
+              </button>
+            </div>
+          </>
+        );
+      case "thirteen1":
+      case "thirteen2":
+      case "thirteen3": {
+        const planFeaturesCore = [
+          "Unlimited Reflect session (private)",
+          "Unlimited Repair support",
+          "Guided partner invites",
+          "Shares sessions (Resolve)",
+          "Core relationship insights",
+          "Up to 90 mins of voice per month"
+        ];
+        const planFeaturesVoice = [
+          "Everything in Core",
+          "Refine couples counselling sessions",
+          "Extended voice conversations",
+          "Faster, responsive AI routing",
+          "Improved support in intense emotions",
+          "Up to 180 mins of voice per month"
+        ];
+        const isVoiceView = screen.screenKey === "thirteen3";
+        const coreSelected = screen.screenKey === "thirteen2";
+        const purchaseEnabled = screen.screenKey === "thirteen2";
+
+        const renderPlanCard = (
+          {
+            title,
+            subtitle,
+            price,
+            features,
+            selected
+          }: {
+            title: string;
+            subtitle: string;
+            price: string;
+            features: string[];
+            selected: boolean;
+          },
+          onClick: () => void
+        ) => (
+          <button
+            type="button"
+            className={`${styles.planCard} ${selected ? styles.planCardSelected : ""}`}
+            onClick={onClick}
+          >
+            <div className={styles.planCardTop}>
+              <p className={styles.planTitle}>{title}</p>
+              <span className={`${styles.planRadio} ${selected ? styles.planRadioSelected : ""}`} />
+            </div>
+            <p className={styles.planSubtitle}>{subtitle}</p>
+            <hr className={styles.planDivider} />
+            <div className={styles.planPriceRow}>
+              <span className={styles.planPrice}>{price}</span>
+              <span className={styles.planUnit}>/ month</span>
+            </div>
+            <div className={styles.planFeatureList}>
+              {features.map((feature) => (
+                <div className={styles.planFeature} key={feature}>
+                  <span aria-hidden="true" className={styles.planFeatureIcon}>
+                    ◌
+                  </span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+          </button>
+        );
+
+        return (
+          <>
+            <div className={styles.sectionTop}>
+              <div className={styles.titleBlock}>
+                <h1 className={styles.title}>Choose a plan</h1>
+                <p className={styles.subtitle}>
+                  Start with what feels right. You can change anytime.
+                </p>
+              </div>
+              <div className={styles.planCarouselViewport}>
+                <div
+                  className={styles.planCarouselTrack}
+                  style={{
+                    transform: `translateX(${isVoiceView ? "-320px" : "0px"})`
+                  }}
+                >
+                  {renderPlanCard(
+                    {
+                      title: "Core",
+                      subtitle: "Support and moments. Designed for consistent everyday use.",
+                      price: "$ 49.99",
+                      features: planFeaturesCore,
+                      selected: coreSelected && !isVoiceView
+                    },
+                    () => navigate(ONBOARDING_ROUTES.thirteen2)
+                  )}
+                  {renderPlanCard(
+                    {
+                      title: "Core + Voice",
+                      subtitle:
+                        "Real-time support for couples who prefer deeper conversations.",
+                      price: "$ 79.99",
+                      features: planFeaturesVoice,
+                      selected: false
+                    },
+                    () => undefined
+                  )}
+                </div>
+              </div>
+              <div className={styles.planIndicators}>
+                <button
+                  type="button"
+                  className={`${styles.planIndicator} ${!isVoiceView ? styles.planIndicatorActive : ""}`}
+                  onClick={() => navigate(ONBOARDING_ROUTES.thirteen1)}
+                />
+                <button
+                  type="button"
+                  className={`${styles.planIndicator} ${isVoiceView ? styles.planIndicatorActive : ""}`}
+                  onClick={() => navigate(ONBOARDING_ROUTES.thirteen3)}
+                />
+              </div>
+            </div>
+            <div className={styles.actionColumn}>
+              <PressableButton
+                className={`${styles.primaryButton} ${
+                  !purchaseEnabled ? styles.primaryButtonDisabled : ""
+                }`}
+                disabled={!purchaseEnabled}
+              >
+                Purchase plan
+              </PressableButton>
+              <button type="button" className={`${styles.textAction} ${styles.textActionDark}`}>
+                Start a free trial
+              </button>
+            </div>
+          </>
+        );
+      }
       default:
         return null;
     }
@@ -857,39 +1331,34 @@ export function OnboardingScreen({ screen }: { screen: OnboardingScreenMeta }) {
   return (
     <motion.div
       className={styles.motionRoot}
-      initial={{ opacity: 1, x: direction * 18 }}
-      animate={{ opacity: 1, x: 0, transition: { duration: 0.28, ease: SWIPE_EASE } }}
-      exit={{ opacity: 1, x: direction * -14, transition: { duration: 0.2, ease: SWIPE_EASE } }}
+      initial={{ opacity: 1, x: direction * 26 }}
+      animate={{ opacity: 1, x: 0, transition: { duration: 0.34, ease: SWIPE_EASE } }}
+      exit={{ opacity: 1, x: direction * -26, transition: { duration: 0.3, ease: SWIPE_EASE } }}
     >
       <motion.div
         className={styles.backgroundLayer}
         style={backgroundStyle}
-        initial={{ x: direction * 34 }}
-        animate={{ x: 0, transition: { duration: 0.32, ease: SWIPE_EASE } }}
-        exit={{ x: direction * -26, transition: { duration: 0.2, ease: SWIPE_EASE } }}
-      >
-        {screen.backgroundMode === "image" ? (
-          <div
-            className={
-              screen.screenKey === "nine" || screen.screenKey === "five1" || screen.screenKey === "five2"
-                ? styles.backgroundOverlaySoft
-                : styles.backgroundOverlayLight
-            }
-          />
-        ) : null}
-      </motion.div>
+        initial={{ x: direction * 42 }}
+        animate={{ x: 0, transition: { duration: 0.36, ease: SWIPE_EASE } }}
+        exit={{ x: direction * -36, transition: { duration: 0.3, ease: SWIPE_EASE } }}
+      />
       <motion.div
         className={styles.contentLayer}
-        initial={{ x: direction * 20, opacity: 0 }}
+        initial={{ x: direction * 24, opacity: 0.96 }}
         animate={{
           x: 0,
           opacity: 1,
-          transition: { duration: 0.22, delay: 0.05, ease: SWIPE_EASE }
+          transition: { duration: 0.3, delay: 0.04, ease: SWIPE_EASE }
         }}
+        exit={{ x: direction * -22, opacity: 1, transition: { duration: 0.24, ease: SWIPE_EASE } }}
       >
-        <StatusBar />
+        <StatusBar light={screen.screenKey === "start"} />
         <main className={rootClassName}>{renderScreenBody()}</main>
-        <HomeIndicator light={screen.backgroundMode === "image"} />
+        <HomeIndicator
+          light={
+            screen.backgroundMode === "image" || screen.screenKey === "start"
+          }
+        />
       </motion.div>
       <AnimatePresence>{sheetKind ? <InfoSheet kind={sheetKind} onClose={() => setSheetKind(null)} /> : null}</AnimatePresence>
     </motion.div>

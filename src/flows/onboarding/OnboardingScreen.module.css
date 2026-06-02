@@ -8,8 +8,10 @@
 .backgroundLayer {
   position: absolute;
   inset: 0;
+  background-color: #fff;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 .backgroundOverlaySoft {
@@ -181,6 +183,14 @@
   color: #333;
 }
 
+.containerTop24 {
+  padding-top: 24px;
+}
+
+.containerTop32 {
+  padding-top: 32px;
+}
+
 .sectionTop {
   display: flex;
   flex-direction: column;
@@ -191,21 +201,30 @@
   gap: 64px;
 }
 
+.sectionInviteGap {
+  gap: 48px;
+}
+
 .progress {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 4px;
+  width: 100%;
 }
 
 .progressSegment {
+  flex: 1;
   height: 2px;
   border-radius: 100px;
   background: rgba(0, 0, 0, 0.1);
+  position: relative;
   overflow: hidden;
 }
 
-.progressSegmentActive {
+.progressSegmentFill {
+  position: absolute;
+  inset: 0;
   background: #333;
+  transform-origin: left center;
 }
 
 .titleBlock {
@@ -360,6 +379,10 @@
   border: 0;
   border-radius: 100px;
   height: 48px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: "Inter", "Avenir Next", sans-serif;
   font-size: 16px;
   font-weight: 500;
@@ -369,6 +392,7 @@
 }
 
 .backButton {
+  flex: 0 0 64px;
   width: 64px;
   background: #ededed;
   color: #262626;
@@ -379,7 +403,8 @@
 }
 
 .primaryButton {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
   background: #f5cac2;
   color: #262626;
 }
@@ -399,6 +424,10 @@
   border: 0;
   background: transparent;
   width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
   font-family: "Inter", "Avenir Next", sans-serif;
   font-size: 16px;
@@ -675,4 +704,304 @@
 
 .homeIndicatorLight {
   background: #fff;
+}
+
+.statusBarLight .statusTime {
+  color: #fff;
+}
+
+.statusBarLight .signalBars span {
+  background: #fff;
+}
+
+.statusBarLight .wifi::before,
+.statusBarLight .wifi::after {
+  border-top-color: #fff;
+}
+
+.statusBarLight .battery {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.statusBarLight .battery::before,
+.statusBarLight .battery::after {
+  background: #fff;
+}
+
+.selectorStack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.selectorChips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.selectorChip {
+  padding: 6px 12px;
+  border-radius: 60px;
+  background: #ebebeb;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #333;
+}
+
+.selectorChipAlert {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.selectorList {
+  display: flex;
+  flex-direction: column;
+}
+
+.selectorItem {
+  border: 0;
+  border-bottom: 1px solid rgba(51, 51, 51, 0.1);
+  background: transparent;
+  width: 100%;
+  padding: 20px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  text-align: left;
+}
+
+.selectorItemActive {
+  background: rgba(245, 202, 194, 0.18);
+  border-radius: 16px;
+  border-bottom-color: transparent;
+}
+
+.selectorItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selectorItemTitle {
+  margin: 0;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #333;
+}
+
+.selectorItemSubtitle {
+  margin: 0;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #333;
+}
+
+.selectorArrow {
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1;
+  color: #333;
+}
+
+.startScreenBody {
+  flex: 1;
+}
+
+.startBrandStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.startBrand {
+  margin: 0;
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.05;
+  color: #fff;
+}
+
+.startTagline {
+  margin: 0;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.inviteCodeCharHidden {
+  opacity: 0;
+}
+
+.timerText {
+  margin: 0;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #b0b0b0;
+}
+
+.timerText strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.planCarouselViewport {
+  width: 352px;
+  overflow: hidden;
+}
+
+.planCarouselTrack {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.planCard {
+  border: 1px solid #ebebeb;
+  border-radius: 20px;
+  background: #fff;
+  width: 324px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+  color: #333;
+}
+
+.planCardSelected {
+  border-color: #ebaea3;
+}
+
+.planCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.planTitle {
+  margin: 0;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #333;
+}
+
+.planRadio {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  display: block;
+}
+
+.planRadioSelected {
+  position: relative;
+}
+
+.planRadioSelected::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #333;
+}
+
+.planSubtitle {
+  margin: 0;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #333;
+}
+
+.planDivider {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  height: 1px;
+  background: rgba(51, 51, 51, 0.2);
+}
+
+.planPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.planPrice {
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1;
+  color: #333;
+}
+
+.planUnit {
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #333;
+}
+
+.planFeatureList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.planFeature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Inter", "Avenir Next", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #333;
+}
+
+.planFeatureIcon {
+  width: 14px;
+  flex: 0 0 14px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.planIndicators {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.planIndicator {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 100px;
+  background: #b0b0b0;
+}
+
+.planIndicatorActive {
+  width: 20px;
+  background: #1a1a1a;
 }

@@ -1,0 +1,561 @@
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  color: #333333;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(255, 255, 255, 0.75), transparent 42%),
+    radial-gradient(circle at 92% 84%, rgba(206, 204, 197, 0.38), transparent 46%),
+    #f5f3ef;
+}
+
+.statusBar {
+  display: flex;
+  width: 100%;
+  height: 59px;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.statusTimeWrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 3px;
+  padding-left: 10px;
+}
+
+.statusTime {
+  width: 54px;
+  height: 20px;
+  font-family: "Figtree", "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.32px;
+  text-align: center;
+}
+
+.dynamicIsland {
+  width: 125px;
+  height: 37px;
+  border-radius: 100px;
+  background: #333333;
+}
+
+.statusRight {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 11px;
+}
+
+.signalGroup {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.signalBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.signalBars span {
+  width: 2px;
+  border-radius: 1px;
+  background: #333333;
+}
+
+.signalBars span:nth-child(1) {
+  height: 4px;
+}
+
+.signalBars span:nth-child(2) {
+  height: 6px;
+}
+
+.signalBars span:nth-child(3) {
+  height: 8px;
+}
+
+.signalBars span:nth-child(4) {
+  height: 10px;
+}
+
+.wifi {
+  width: 17px;
+  height: 11.834px;
+}
+
+.battery {
+  width: 27.401px;
+  height: 13px;
+}
+
+.body {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.contentBlock {
+  position: absolute;
+  top: 174px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.heroBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.logoWrap {
+  display: flex;
+  width: 48.5px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 48.5px;
+  height: 56px;
+}
+
+.textBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.28;
+  color: #3b3b3c;
+}
+
+.subtitle {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #4b4b4b;
+}
+
+.inputArea {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inputAreaError {
+  gap: 36px;
+}
+
+.fieldShell {
+  position: relative;
+  min-height: 56px;
+}
+
+.fieldShake {
+  animation: shakeField 420ms linear;
+}
+
+@keyframes shakeField {
+  0% {
+    transform: translateX(0);
+  }
+
+  15% {
+    transform: translateX(-8px);
+  }
+
+  30% {
+    transform: translateX(7px);
+  }
+
+  45% {
+    transform: translateX(-6px);
+  }
+
+  60% {
+    transform: translateX(5px);
+  }
+
+  75% {
+    transform: translateX(-3px);
+  }
+
+  90% {
+    transform: translateX(2px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.floatingLabel {
+  position: absolute;
+  left: 16px;
+  top: 20px;
+  z-index: 3;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #b0b0b0;
+  pointer-events: none;
+}
+
+.inputRow {
+  position: relative;
+  height: 56px;
+}
+
+.inputControl {
+  width: 100%;
+  height: 56px;
+  border: 0;
+  outline: 0;
+  padding: 27px 52px 8px 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #333333;
+  background: transparent;
+}
+
+.inputControlMasked {
+  color: transparent;
+  caret-color: transparent;
+}
+
+.inputDisplay {
+  position: absolute;
+  left: 16px;
+  right: 52px;
+  bottom: 8px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.plainValue {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #333333;
+}
+
+.maskedValue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.maskDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #333333;
+}
+
+.maskedCaret {
+  width: 1px;
+  height: 16px;
+  margin-left: 1px;
+  background: #333333;
+  animation: caretBlink 1s step-start infinite;
+}
+
+@keyframes caretBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.eyeButton {
+  position: absolute;
+  right: 0;
+  top: 4px;
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #3a3a3a;
+}
+
+.eyeIcon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+}
+
+.eyeIconSvg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.underlineBase {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #c8c4bc;
+}
+
+.underlineActive {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #1a1a1a;
+}
+
+.errorLabel {
+  position: absolute;
+  left: 16px;
+  bottom: -20px;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: #d94f3d;
+}
+
+.actionStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.continueButton {
+  height: 48px;
+  border: 0;
+  border-radius: 60px;
+  background: #f2c5bb;
+  color: #333333;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.15px;
+}
+
+.continueButton:disabled {
+  cursor: default;
+}
+
+.loadingDots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loadingDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #333333;
+  animation: loadingDotBounce 0.6s ease-in-out infinite;
+}
+
+.loadingDot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loadingDot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loadingDotBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.forgotButton {
+  align-self: stretch;
+  height: 48px;
+  border: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  color: #333333;
+  text-decoration-line: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  background: transparent;
+}
+
+.forgotButtonPulse {
+  animation: forgotPulse 200ms ease;
+}
+
+@keyframes forgotPulse {
+  0% {
+    opacity: 1;
+    text-decoration-thickness: 1px;
+  }
+
+  50% {
+    opacity: 0.5;
+    text-decoration-thickness: 2px;
+  }
+
+  100% {
+    opacity: 1;
+    text-decoration-thickness: 1px;
+  }
+}
+
+.homeIndicatorWrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+}
+
+.homeIndicator {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 134px;
+  height: 5px;
+  border-radius: 100px;
+  background: #333333;
+  transform: translateX(-50%);
+}
+
+.keyboard {
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  bottom: 0;
+  height: 291px;
+  overflow: hidden;
+  background: #939393;
+}
+
+.keyboardOverlayLum,
+.keyboardOverlayBase,
+.keyboardOverlayDodge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.keyboardOverlayLum {
+  background: rgba(85, 85, 85, 0.9);
+  mix-blend-mode: luminosity;
+}
+
+.keyboardOverlayBase {
+  background: rgba(86, 88, 92, 0.87);
+}
+
+.keyboardOverlayDodge {
+  background: #939393;
+  mix-blend-mode: color-dodge;
+  backdrop-filter: blur(75px);
+}
+
+.keyboardGrid {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px;
+}
+
+.keyRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.key {
+  height: 46px;
+  border: 0;
+  border-radius: 5px;
+  background: #f5f5f5;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #121212;
+}
+
+.keyMuted {
+  background: transparent;
+  box-shadow: none;
+  color: #4b5160;
+}
+
+.keyIcon {
+  text-transform: lowercase;
+  color: #1c1f24;
+}
+
+.keyboardHomeIndicator {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 144px;
+  height: 5px;
+  border-radius: 100px;
+  background: #1a1a1a;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 460px) {
+  .contentBlock {
+    left: 24px;
+    right: 24px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+}

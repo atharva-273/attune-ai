@@ -1,4 +1,5 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import { Navigate, useLocation, useOutlet } from "react-router-dom";
 import type { RouteObject } from "react-router-dom";
 import { FlowScreen } from "../../components/flow/FlowScreen";
 import type { FlowOutput, InteractionTiming } from "../../contracts/flowContracts";
@@ -15,9 +16,14 @@ import {
 import { OnboardingStateProvider } from "./onboardingState";
 
 function OnboardingFlowLayout() {
+  const location = useLocation();
+  const outlet = useOutlet();
+
   return (
     <OnboardingStateProvider>
-      <Outlet />
+      <AnimatePresence initial={false} mode="wait">
+        <div key={location.pathname}>{outlet}</div>
+      </AnimatePresence>
     </OnboardingStateProvider>
   );
 }
@@ -38,7 +44,7 @@ const onboardingChildRoutes: RouteObject[] = ONBOARDING_SCREENS.map((screen) => 
 export const onboardingFlowRoutes: RouteObject[] = [
   {
     path: "/",
-    element: <Navigate to={ONBOARDING_ROUTES.splash} replace />
+    element: <Navigate to={ONBOARDING_ROUTES.selector} replace />
   },
   {
     path: "/flows/onboarding",
@@ -46,7 +52,7 @@ export const onboardingFlowRoutes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <Navigate to={ONBOARDING_ROUTES.splash} replace />
+        element: <Navigate to={ONBOARDING_ROUTES.selector} replace />
       },
       ...onboardingChildRoutes
     ]
